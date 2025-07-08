@@ -4,6 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Quản lý Bunny Shop</title>
+
+  <!-- 🔐 Kiểm tra mật khẩu NGAY TRONG HEAD -->
+  <script>
+    const password = "bunnyadmin123";
+    const input = prompt("🔒 Nhập mật khẩu để vào trang quản lý:");
+    if (input !== password) {
+      alert("🚫 Sai mật khẩu! Truy cập bị từ chối.");
+      document.write(""); // Xoá sạch toàn bộ nội dung HTML
+      throw new Error("Truy cập bị từ chối");
+    }
+  </script>
+
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
@@ -81,17 +93,6 @@
   </style>
 </head>
 <body>
-  <!-- 🔐 Kiểm tra mật khẩu trước khi tải nội dung -->
-  <script>
-    const password = "bunnyadmin123"; // Đổi tại đây nếu cần
-    const input = prompt("🔒 Nhập mật khẩu để vào trang quản lý:");
-    if (input !== password) {
-      alert("🚫 Sai mật khẩu! Truy cập bị từ chối.");
-      document.write(""); // Xoá toàn bộ trang
-      throw new Error("Truy cập bị từ chối");
-    }
-  </script>
-
   <h1>🎀 Quản lý acc Bunny Shop 🎀</h1>
 
   <div class="form-section">
