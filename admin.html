@@ -81,63 +81,63 @@
   </style>
 </head>
 <body>
+  <!-- 🔐 Kiểm tra mật khẩu trước khi tải nội dung -->
+  <script>
+    const password = "bunnyadmin123"; // Đổi tại đây nếu cần
+    const input = prompt("🔒 Nhập mật khẩu để vào trang quản lý:");
+    if (input !== password) {
+      alert("🚫 Sai mật khẩu! Truy cập bị từ chối.");
+      document.write(""); // Xoá toàn bộ trang
+      throw new Error("Truy cập bị từ chối");
+    }
+  </script>
 
-<!-- 🔐 Mã bảo vệ bằng mật khẩu -->
-<script>
-  const password = "dfastwevr46543b5"; // 👈 Đổi mật khẩu tại đây nếu cần
-  const input = prompt("🔒 Nhập mật khẩu để vào trang quản lý:");
-  if (input !== password) {
-    document.body.innerHTML = "<h2 style='text-align:center;color:red;'>🚫 Sai mật khẩu! Truy cập bị từ chối.</h2>";
-    throw new Error("Access denied");
-  }
-</script>
+  <h1>🎀 Quản lý acc Bunny Shop 🎀</h1>
 
-<h1>🎀 Quản lý acc Bunny Shop 🎀</h1>
+  <div class="form-section">
+    <h2>➕ Thêm acc mới</h2>
+    <label>Level:</label>
+    <input type="text" id="level" placeholder="Nhập level">
 
-<div class="form-section">
-  <h2>➕ Thêm acc mới</h2>
-  <label>Level:</label>
-  <input type="text" id="level" placeholder="Nhập level">
+    <label>Rank:</label>
+    <input type="text" id="rank" placeholder="Nhập rank">
 
-  <label>Rank:</label>
-  <input type="text" id="rank" placeholder="Nhập rank">
+    <label>Liên kết (chọn đúng 2):</label>
+    <div class="checkboxes" id="linkCheckboxes">
+      <label><input type="checkbox" value="Gmail"> Gmail</label>
+      <label><input type="checkbox" value="Facebook"> Facebook</label>
+      <label><input type="checkbox" value="Facebook Die"> Facebook Die</label>
+      <label><input type="checkbox" value="Game Center"> Game Center</label>
+      <label><input type="checkbox" value="Dư Liên Kết"> Dư Liên Kết</label>
+    </div>
 
-  <label>Liên kết (chọn đúng 2):</label>
-  <div class="checkboxes" id="linkCheckboxes">
-    <label><input type="checkbox" value="Gmail"> Gmail</label>
-    <label><input type="checkbox" value="Facebook"> Facebook</label>
-    <label><input type="checkbox" value="Facebook Die"> Facebook Die</label>
-    <label><input type="checkbox" value="Game Center"> Game Center</label>
-    <label><input type="checkbox" value="Dư Liên Kết"> Dư Liên Kết</label>
+    <label>Ảnh acc (tối đa 20 ảnh):</label>
+    <input type="file" id="images" multiple accept="image/*"/>
+
+    <button onclick="addAccount()">Thêm acc</button>
   </div>
 
-  <label>Ảnh acc (tối đa 20 ảnh):</label>
-  <input type="file" id="images" multiple accept="image/*"/>
+  <div class="acc-table">
+    <h2>📦 Danh sách acc</h2>
+    <table id="accTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Level</th>
+          <th>Rank</th>
+          <th>Liên kết</th>
+          <th>Ảnh</th>
+          <th>Trạng thái</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Các acc sẽ được render tại đây -->
+      </tbody>
+    </table>
+  </div>
 
-  <button onclick="addAccount()">Thêm acc</button>
-</div>
-
-<div class="acc-table">
-  <h2>📦 Danh sách acc</h2>
-  <table id="accTable">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Level</th>
-        <th>Rank</th>
-        <th>Liên kết</th>
-        <th>Ảnh</th>
-        <th>Trạng thái</th>
-        <th>Hành động</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Các acc sẽ được render tại đây -->
-    </tbody>
-  </table>
-</div>
-
-<script src="config.js"></script>
-<script src="admin-script.js"></script>
+  <script src="config.js"></script>
+  <script src="admin-script.js"></script>
 </body>
 </html>
