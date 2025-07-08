@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🌸 Bunny Shop - Acc PUBG Mobile 🌸</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>🌸 Bunny Shop 🌸</header>
+
+  <div class="container">
+    <div class="filter">
+      <label for="filterType">Lọc theo liên kết:</label>
+      <select id="filterType">
+        <option value="all">Tất cả</option>
+        <option value="Gmail">Gmail</option>
+        <option value="Facebook">Facebook</option>
+        <option value="Facebook Die">Facebook Die</option>
+        <option value="Game Center">Game Center</option>
+        <option value="Dư Liên Kết">Dư Liên Kết</option>
+      </select>
+    </div>
+
+    <div class="tabs">
+      <button id="tab-dangban" class="tab-button active">Đang bán</button>
+      <button id="tab-daban" class="tab-button">Đã bán</button>
+    </div>
+
+    <div class="acc-list" id="accList">
+      <!-- Danh sách acc sẽ render tại đây -->
+    </div>
+  </div>
+
+  <!-- Popup chi tiết acc -->
+  <div id="accDetailPopup" class="popup hidden">
+    <div class="popup-inner">
+      <span class="close-btn" onclick="closePopup()">&times;</span>
+      <div class="carousel" id="carousel"></div>
+      <div class="acc-info">
+        <p><strong>Level:</strong> <span id="popupLevel"></span></p>
+        <p><strong>Rank:</strong> <span id="popupRank"></span></p>
+        <p><strong>Liên kết:</strong> <span id="popupLinks"></span></p>
+        <a href="https://www.facebook.com/61577223824799" target="_blank" class="btn-contact">Liên hệ Facebook</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup ảnh riêng lẻ -->
+  <div id="imagePopup" onclick="this.style.display='none'">
+    <img id="popupImg" src="" alt="Popup Image" />
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

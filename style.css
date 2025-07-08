@@ -1,0 +1,206 @@
+/* Font & nền */
+body {
+  font-family: 'Quicksand', sans-serif;
+  background-color: #ffeef8;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+/* Header */
+header {
+  background-color: #ffb6d5;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+  font-size: 1.8rem;
+  font-weight: bold;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Container */
+.container {
+  padding: 1rem 2rem;
+}
+
+/* Bộ lọc liên kết */
+.filter {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.tab-button {
+  background: #ffcce4;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: bold;
+  color: #fff;
+  transition: background 0.2s ease;
+}
+.tab-button.active {
+  background: #ff77bb;
+}
+.tab-button:hover {
+  background: #ff94c6;
+}
+
+/* Danh sách acc */
+.acc-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Acc card */
+.acc-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+  cursor: pointer;
+  position: relative;
+}
+.acc-card:hover {
+  transform: translateY(-4px);
+}
+.acc-card img {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  background: #fafafa;
+}
+.acc-content {
+  padding: 1rem;
+}
+.acc-content h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+}
+.acc-content p {
+  margin: 0.3rem 0;
+  font-size: 0.95rem;
+}
+
+/* Badge loại liên kết */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  margin-right: 0.3rem;
+  border-radius: 8px;
+  background: #ffb6d5;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+/* Badge đã bán */
+.sold-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: red;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 0.8rem;
+  z-index: 2;
+}
+
+/* Popup chi tiết acc */
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+.popup.hidden {
+  display: none;
+}
+.popup-inner {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  position: relative;
+}
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* Carousel ảnh */
+.carousel {
+  display: flex;
+  overflow-x: auto;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.carousel img {
+  height: 120px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.carousel img:hover {
+  transform: scale(1.05);
+}
+
+/* Popup ảnh to */
+#imagePopup {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+#imagePopup img {
+  max-width: 90%;
+  max-height: 90vh;
+  border-radius: 12px;
+}
+
+/* Nút liên hệ */
+.btn-contact {
+  display: inline-block;
+  padding: 0.6rem 1.2rem;
+  background: #ff6fa8;
+  color: white;
+  text-decoration: none;
+  border-radius: 10px;
+  font-weight: bold;
+  transition: background 0.2s ease;
+}
+.btn-contact:hover {
+  background: #ff5897;
+}

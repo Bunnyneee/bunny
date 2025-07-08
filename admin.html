@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quản lý Bunny Shop</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background: #fff0f8;
+      font-family: 'Quicksand', sans-serif;
+      padding: 2rem;
+    }
+    h1 {
+      text-align: center;
+      color: #ff66aa;
+    }
+    .form-section, .acc-table {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    input[type="text"], select {
+      width: 100%;
+      padding: 0.6rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-top: 0.3rem;
+    }
+    .checkboxes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+    .checkboxes label {
+      font-weight: normal;
+    }
+    button {
+      padding: 0.6rem 1.2rem;
+      border: none;
+      background: #ff7fba;
+      color: white;
+      font-weight: bold;
+      border-radius: 10px;
+      margin-top: 1rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #ff579f;
+    }
+    .acc-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .acc-table th, .acc-table td {
+      padding: 0.6rem;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    .btn-danger {
+      background: #ff4d4d;
+    }
+    .btn-danger:hover {
+      background: #e60000;
+    }
+    .btn-secondary {
+      background: #888;
+    }
+    .btn-secondary:hover {
+      background: #555;
+    }
+  </style>
+</head>
+<body>
+
+<!-- 🔐 Mã bảo vệ bằng mật khẩu -->
+<script>
+  const password = "dfastwevr46543b5"; // 👈 Đổi mật khẩu tại đây nếu cần
+  const input = prompt("🔒 Nhập mật khẩu để vào trang quản lý:");
+  if (input !== password) {
+    document.body.innerHTML = "<h2 style='text-align:center;color:red;'>🚫 Sai mật khẩu! Truy cập bị từ chối.</h2>";
+    throw new Error("Access denied");
+  }
+</script>
+
+<h1>🎀 Quản lý acc Bunny Shop 🎀</h1>
+
+<div class="form-section">
+  <h2>➕ Thêm acc mới</h2>
+  <label>Level:</label>
+  <input type="text" id="level" placeholder="Nhập level">
+
+  <label>Rank:</label>
+  <input type="text" id="rank" placeholder="Nhập rank">
+
+  <label>Liên kết (chọn đúng 2):</label>
+  <div class="checkboxes" id="linkCheckboxes">
+    <label><input type="checkbox" value="Gmail"> Gmail</label>
+    <label><input type="checkbox" value="Facebook"> Facebook</label>
+    <label><input type="checkbox" value="Facebook Die"> Facebook Die</label>
+    <label><input type="checkbox" value="Game Center"> Game Center</label>
+    <label><input type="checkbox" value="Dư Liên Kết"> Dư Liên Kết</label>
+  </div>
+
+  <label>Ảnh acc (tối đa 20 ảnh):</label>
+  <input type="file" id="images" multiple accept="image/*"/>
+
+  <button onclick="addAccount()">Thêm acc</button>
+</div>
+
+<div class="acc-table">
+  <h2>📦 Danh sách acc</h2>
+  <table id="accTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Level</th>
+        <th>Rank</th>
+        <th>Liên kết</th>
+        <th>Ảnh</th>
+        <th>Trạng thái</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Các acc sẽ được render tại đây -->
+    </tbody>
+  </table>
+</div>
+
+<script src="config.js"></script>
+<script src="admin-script.js"></script>
+</body>
+</html>
