@@ -1,136 +1,169 @@
+// admin-script.js hoàn chỉnh
+
+// ⚙️ Cấu hình (lấy từ config.js)
+const headers = {
+  Authorization: `token ${GITHUB_TOKEN}`,
+  "Content-Type": "application/json"
+};
+
 let accounts = [];
 
-// Tải accs.json
+// 📥 Tải danh sách acc từ GitHub
 async function loadAccounts() {
-  const res = await fetch('https://raw.githubusercontent.com/' + GITHUB_USERNAME + '/' + REPO_NAME + '/' + BRANCH + '/' + PATH_JSON);
-  accounts = await res.json();
-  renderTable();
+  try {
+    const res = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${PATH_JSON}?ref=${BRANCH}`);
+    const data = await res.json();
+    const content = atob(data.content);
+    accounts = JSON.parse(content);
+    renderAccounts();
+  } catch (err) {
+    console.error("❌ Lỗi tải accs.json:", err);
+  }
 }
 
-loadAccounts();
+// 💾 Lưu accs mới lên GitHub
+async function saveAccountsToGitHub() {
+  const getShaRes = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${PATH_JSON}?ref=${BRANCH}`, {
+    headers
+  });
+  const getShaData = await getShaRes.json();
+  const sha = getShaData.sha;
 
-// Tạo ID mới
-function getNextId() {
-  return accounts.length > 0 ? Math.max(...accounts.map(a => a.id)) + 1 : 1;
+  const updatedContent = btoa(JSON.stringify(accounts, null, 2));
+
+  const res = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${PATH_JSON}`, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({
+      message: "Update accs.json",
+      content: updatedContent,
+      branch: BRANCH,
+      sha
+    })
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    console.error("❌ Lỗi lưu JSON:", err);
+    alert("Không thể lưu dữ liệu lên GitHub.");
+  }
 }
 
-// Thêm acc mới
+// 🖼️ Upload ảnh lên GitHub
+async function uploadImageToGitHub(file, accId, index) {
+  const reader = new FileReader();
+  return new Promise((resolve, reject) => {
+    reader.onload = async () => {
+      const base64Content = reader.result.split(",")[1];
+      const path = `${IMG_FOLDER}/${accId}/${index + 1}.jpg`;
+
+      const getRes = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${path}?ref=${BRANCH}`, { headers });
+      const getData = await getRes.json();
+      const oldSha = getData?.sha;
+
+      await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${path}`, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify({
+          message: "Upload image",
+          content: base64Content,
+          branch: BRANCH,
+          ...(oldSha ? { sha: oldSha } : {})
+        })
+      });
+      resolve(path);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// ➕ Thêm acc mới
 async function addAccount() {
-  const level = document.getElementById('level').value.trim();
-  const rank = document.getElementById('rank').value.trim();
-  const imagesInput = document.getElementById('images');
-  const links = Array.from(document.querySelectorAll('#linkCheckboxes input:checked')).map(i => i.value);
+  const level = document.getElementById("level").value.trim();
+  const rank = document.getElementById("rank").value.trim();
+  const checkboxes = document.querySelectorAll("#linkCheckboxes input[type=checkbox]:checked");
+  const files = selectedImages;
 
-  if (!level || !rank || links.length !== 2 || imagesInput.files.length === 0) {
-    alert("Vui lòng điền đầy đủ thông tin, chọn đúng 2 liên kết và ít nhất 1 ảnh.");
+  if (!level || !rank || checkboxes.length !== 2 || files.length === 0) {
+    alert("Vui lòng nhập đầy đủ thông tin và chọn đúng 2 liên kết cùng ít nhất 1 ảnh.");
     return;
   }
 
-  const id = getNextId();
-  const imagePaths = [];
+  const links = Array.from(checkboxes).map(cb => cb.value);
+  const newId = accounts.length > 0 ? Math.max(...accounts.map(a => a.id)) + 1 : 1;
+  const imgPaths = [];
 
-  for (let i = 0; i < imagesInput.files.length; i++) {
-    const file = imagesInput.files[i];
-    const path = `img/${id}/${i + 1}.jpg`;
-    await uploadImageToGitHub(file, path);
-    imagePaths.push(`img/${id}/${i + 1}.jpg`);
+  for (let i = 0; i < files.length; i++) {
+    const path = await uploadImageToGitHub(files[i], newId, i);
+    imgPaths.push(path);
   }
 
-  const acc = { id, level, rank, links, images: imagePaths, sold: false };
-  accounts.push(acc);
-  await updateAccountsFile();
+  const newAcc = {
+    id: newId,
+    level,
+    rank,
+    links,
+    images: imgPaths,
+    sold: false
+  };
 
-  alert("Thêm acc thành công!");
-  document.getElementById('level').value = "";
-  document.getElementById('rank').value = "";
-  document.getElementById('images').value = "";
-  document.querySelectorAll('#linkCheckboxes input').forEach(i => i.checked = false);
-  renderTable();
+  accounts.push(newAcc);
+  await saveAccountsToGitHub();
+  selectedImages = [];
+  alert("✅ Đã thêm acc mới!");
+  renderAccounts();
 }
 
-// Hiển thị bảng
-function renderTable() {
+// 🧹 Xoá acc
+async function deleteAcc(id) {
+  if (!confirm("Bạn có chắc muốn xoá acc này?")) return;
+  accounts = accounts.filter(acc => acc.id !== id);
+  await saveAccountsToGitHub();
+  renderAccounts();
+}
+
+// ✏️ Đánh dấu đã bán
+async function toggleSold(id) {
+  const acc = accounts.find(a => a.id === id);
+  acc.sold = !acc.sold;
+  await saveAccountsToGitHub();
+  renderAccounts();
+}
+
+// 🖼️ Hiển thị danh sách acc
+function renderAccounts() {
   const tbody = document.querySelector("#accTable tbody");
   tbody.innerHTML = "";
-  accounts.forEach(acc => {
-    const row = document.createElement("tr");
-    row.innerHTML = `
+  for (const acc of accounts) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
       <td>${acc.id}</td>
       <td>${acc.level}</td>
       <td>${acc.rank}</td>
       <td>${acc.links.join(", ")}</td>
       <td>${acc.images.length} ảnh</td>
-      <td>${acc.sold ? "Đã bán" : "Đang bán"}</td>
+      <td>${acc.sold ? "<span style='color:red'>Đã bán</span>" : "Đang bán"}</td>
       <td>
-        <button class="btn-secondary" onclick="toggleSold(${acc.id})">${acc.sold ? "↩ Mở bán lại" : "✅ Đã bán"}</button>
-        <button class="btn-danger" onclick="deleteAcc(${acc.id})">Xoá</button>
+        <button onclick="toggleSold(${acc.id})" class="btn-secondary">${acc.sold ? "Bỏ đánh dấu" : "Đánh dấu đã bán"}</button>
+        <button onclick="deleteAcc(${acc.id})" class="btn-danger">Xoá</button>
       </td>
     `;
-    tbody.appendChild(row);
-  });
+    tbody.appendChild(tr);
+  }
 }
 
-// Đánh dấu bán / mở bán
-async function toggleSold(id) {
-  const acc = accounts.find(a => a.id === id);
-  acc.sold = !acc.sold;
-  await updateAccountsFile();
-  renderTable();
-}
+// 🧠 Quản lý ảnh chọn nhiều lần
+let selectedImages = [];
+document.getElementById("images").addEventListener("change", function (e) {
+  const files = Array.from(e.target.files);
+  if (selectedImages.length + files.length > 20) {
+    alert("Tối đa chỉ được 20 ảnh!");
+    return;
+  }
+  selectedImages.push(...files);
+  e.target.value = "";
+});
 
-// Xoá acc
-async function deleteAcc(id) {
-  if (!confirm("Bạn có chắc muốn xoá acc này?")) return;
-  accounts = accounts.filter(a => a.id !== id);
-  await updateAccountsFile();
-  renderTable();
-}
-
-// Upload ảnh lên GitHub
-async function uploadImageToGitHub(file, path) {
-  const reader = new FileReader();
-  return new Promise((resolve) => {
-    reader.onload = async () => {
-      const content = reader.result.split(",")[1];
-      const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${path}`;
-      await fetch(url, {
-        method: "PUT",
-        headers: {
-          Authorization: `token ${GITHUB_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: `Upload ${path}`,
-          content: content,
-          branch: BRANCH
-        })
-      });
-      resolve();
-    };
-    reader.readAsDataURL(file);
-  });
-}
-
-// Cập nhật file accs.json
-async function updateAccountsFile() {
-  const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${PATH_JSON}`;
-  const res = await fetch(url, {
-    headers: { Authorization: `token ${GITHUB_TOKEN}` }
-  });
-  const data = await res.json();
-
-  const newContent = btoa(unescape(encodeURIComponent(JSON.stringify(accounts, null, 2))));
-  await fetch(url, {
-    method: "PUT",
-    headers: {
-      Authorization: `token ${GITHUB_TOKEN}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      message: "Cập nhật accs.json",
-      content: newContent,
-      sha: data.sha,
-      branch: BRANCH
-    })
-  });
-}
+// 🚀 Bắt đầu
+loadAccounts();
