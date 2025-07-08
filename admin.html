@@ -5,14 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Quản lý Bunny Shop</title>
 
-  <!-- 🔐 Kiểm tra mật khẩu NGAY TRONG HEAD -->
+  <!-- 🔐 Kiểm tra mật khẩu -->
   <script>
     const password = "bunnyadmin123";
     const input = prompt("🔒 Nhập mật khẩu để vào trang quản lý:");
     if (input !== password) {
-      alert("🚫 Sai mật khẩu! Truy cập bị từ chối.");
-      document.write(""); // Xoá sạch toàn bộ nội dung HTML
-      throw new Error("Truy cập bị từ chối");
+      alert("🚫 Sai mật khẩu! Bạn sẽ được chuyển về trang chính.");
+      window.location.href = "https://bunnyneee.github.io/bunny/";
     }
   </script>
 
