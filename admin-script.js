@@ -1,12 +1,14 @@
-// admin-script.js hoàn chỉnh đã sửa lỗi DOMContentLoaded
+// admin-script.js - Bản đầy đủ đã sửa lỗi chọn ảnh và dùng đúng phạm vi biến
+
+// 🔓 Khai báo biến toàn cục để các hàm khác truy cập được
+let selectedImages = [];
+let accounts = [];
 
 window.addEventListener("DOMContentLoaded", () => {
   const headers = {
     Authorization: `token ${GITHUB_TOKEN}`,
     "Content-Type": "application/json"
   };
-
-  let accounts = [];
 
   async function loadAccounts() {
     try {
@@ -21,9 +23,7 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   async function saveAccountsToGitHub() {
-    const getShaRes = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${PATH_JSON}?ref=${BRANCH}`, {
-      headers
-    });
+    const getShaRes = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${PATH_JSON}?ref=${BRANCH}`, { headers });
     const getShaData = await getShaRes.json();
     const sha = getShaData.sha;
 
@@ -54,6 +54,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const base64Content = reader.result.split(",")[1];
         const path = `${IMG_FOLDER}/${accId}/${index + 1}.jpg`;
 
+        // Kiểm tra có tồn tại file cũ để lấy sha nếu có
         const getRes = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${path}?ref=${BRANCH}`, { headers });
         const getData = await getRes.json();
         const oldSha = getData?.sha;
@@ -79,10 +80,9 @@ window.addEventListener("DOMContentLoaded", () => {
     const level = document.getElementById("level").value.trim();
     const rank = document.getElementById("rank").value.trim();
     const checkboxes = document.querySelectorAll("#linkCheckboxes input[type=checkbox]:checked");
-    const files = selectedImages;
 
-    if (!level || !rank || checkboxes.length !== 2 || files.length === 0) {
-      alert("Vui lòng nhập đầy đủ thông tin và chọn đúng 2 liên kết cùng ít nhất 1 ảnh.");
+    if (!level || !rank || checkboxes.length !== 2 || selectedImages.length === 0) {
+      alert("Vui lòng nhập đầy đủ thông tin, chọn đúng 2 liên kết và ít nhất 1 ảnh.");
       return;
     }
 
@@ -90,8 +90,8 @@ window.addEventListener("DOMContentLoaded", () => {
     const newId = accounts.length > 0 ? Math.max(...accounts.map(a => a.id)) + 1 : 1;
     const imgPaths = [];
 
-    for (let i = 0; i < files.length; i++) {
-      const path = await uploadImageToGitHub(files[i], newId, i);
+    for (let i = 0; i < selectedImages.length; i++) {
+      const path = await uploadImageToGitHub(selectedImages[i], newId, i);
       imgPaths.push(path);
     }
 
@@ -146,8 +146,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // 📂 Chọn nhiều ảnh
-  let selectedImages = [];
+  // 🎯 Gắn sự kiện chọn ảnh nhiều file
   document.getElementById("images").addEventListener("change", function (e) {
     const files = Array.from(e.target.files);
     if (selectedImages.length + files.length > 20) {
@@ -155,10 +154,14 @@ window.addEventListener("DOMContentLoaded", () => {
       return;
     }
     selectedImages.push(...files);
-    e.target.value = "";
+    e.target.value = ""; // Reset input để có thể chọn lại
   });
 
-  // 🚀 Khởi động
+  // 📌 Gắn vào window để gọi được từ HTML
   window.addAccount = addAccount;
+  window.toggleSold = toggleSold;
+  window.deleteAcc = deleteAcc;
+
+  // 🚀 Bắt đầu tải acc
   loadAccounts();
 });
