@@ -65,12 +65,12 @@
 
   <h2>Thêm Acc Mới</h2>
   <div class="form-group">
-    <label>Cấp độ:</label>
-    <input type="number" id="level" placeholder="VD: 50" />
+    <label for="level">Cấp độ:</label>
+    <input type="number" id="level" name="level" placeholder="VD: 50" />
   </div>
   <div class="form-group">
-    <label>Rank:</label>
-    <input type="text" id="rank" placeholder="VD: Ace, Conqueror..." />
+    <label for="rank">Rank:</label>
+    <input type="text" id="rank" name="rank" placeholder="VD: Ace, Conqueror..." />
   </div>
   <div class="form-group" id="linkCheckboxes">
     <label>Chọn đúng 2 liên kết:</label><br>
@@ -81,8 +81,9 @@
     <label><input type="checkbox" value="Dư Liên Kết" /> Dư Liên Kết</label>
   </div>
   <div class="form-group">
-    <label>Chọn ảnh (tối đa 20):</label>
-    <input type="file" id="images" accept="image/*" multiple />
+    <label for="images">Chọn ảnh (tối đa 20):</label>
+    <input type="file" id="images" name="images" accept="image/*" multiple />
+    <p style="font-size: 0.9rem; color: #777;">Nếu chọn quá 20 ảnh sẽ bị từ chối.</p>
   </div>
   <div class="form-group">
     <button onclick="addAccount()">➕ Thêm Acc</button>
