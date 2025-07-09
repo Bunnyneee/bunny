@@ -1,5 +1,5 @@
 // 📌 Thay các dòng dưới bằng thông tin thật của bạn
-const GITHUB_TOKEN = "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"; // 👉 Dán token GitHub có quyền push
+const GITHUB_TOKEN = "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"; // 👉 Dán token GitHub có quyền push
 const GITHUB_USERNAME = "Bunnyneee";
 const REPO_NAME = "bunny";
 const BRANCH = "main"; // hoặc "master" nếu bạn dùng branch đó
