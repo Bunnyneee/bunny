@@ -6,7 +6,6 @@
   <title>Quản lý acc - Bunny Shop</title>
   <link rel="stylesheet" href="style.css">
   <script src="config.js"></script>
-  <script src="admin-script.js" defer></script>
   <style>
     body {
       font-family: Quicksand, sans-serif;
@@ -86,7 +85,7 @@
     <p style="font-size: 0.9rem; color: #777;">Nếu chọn quá 20 ảnh sẽ bị từ chối.</p>
   </div>
   <div class="form-group">
-    <button onclick="addAccount()">➕ Thêm Acc</button>
+    <button id="addBtn">➕ Thêm Acc</button>
   </div>
 
   <hr>
@@ -106,5 +105,87 @@
     </thead>
     <tbody></tbody>
   </table>
+
+<script>
+const IMG_FOLDER = "img";
+let selectedImages = [];
+let accounts = [];
+
+window.addEventListener("DOMContentLoaded", () => {
+  const inputImages = document.getElementById("images");
+  const addBtn = document.getElementById("addBtn");
+
+  inputImages.addEventListener("change", function (e) {
+    const files = Array.from(e.target.files);
+    if (files.length + selectedImages.length > 20) {
+      alert("Tối đa 20 ảnh!");
+      return;
+    }
+    selectedImages.push(...files);
+    console.log("Đã chọn ảnh:", selectedImages);
+  });
+
+  addBtn.addEventListener("click", () => {
+    const level = document.getElementById("level").value.trim();
+    const rank = document.getElementById("rank").value.trim();
+    const checkboxes = document.querySelectorAll("#linkCheckboxes input[type=checkbox]:checked");
+
+    if (!level || !rank || checkboxes.length !== 2 || selectedImages.length === 0) {
+      alert("Vui lòng nhập đủ cấp, rank, đúng 2 liên kết và chọn ảnh.");
+      return;
+    }
+
+    const links = Array.from(checkboxes).map(cb => cb.value);
+    const newId = Date.now();
+    const images = selectedImages.map((f, i) => `${IMG_FOLDER}/${newId}/${i + 1}.jpg`);
+
+    const acc = {
+      id: newId,
+      level,
+      rank,
+      links,
+      images,
+      sold: false
+    };
+
+    accounts.push(acc);
+    selectedImages = [];
+    alert("✅ Đã thêm acc (mô phỏng, chưa lưu lên GitHub).")
+    render();
+  });
+
+  function render() {
+    const tbody = document.querySelector("#accTable tbody");
+    tbody.innerHTML = "";
+    for (const acc of accounts) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${acc.id}</td>
+        <td>${acc.level}</td>
+        <td>${acc.rank}</td>
+        <td>${acc.links.join(", ")}</td>
+        <td>${acc.images.length} ảnh</td>
+        <td>${acc.sold ? '<span style="color:red">Đã bán</span>' : 'Đang bán'}</td>
+        <td>
+          <button onclick="toggle(${acc.id})">Đánh dấu</button>
+          <button onclick="remove(${acc.id})">Xoá</button>
+        </td>`;
+      tbody.appendChild(tr);
+    }
+  }
+});
+
+function toggle(id) {
+  const acc = accounts.find(a => a.id === id);
+  acc.sold = !acc.sold;
+  alert("Trạng thái đã đổi (mô phỏng).");
+  document.dispatchEvent(new Event("DOMContentLoaded"));
+}
+function remove(id) {
+  accounts = accounts.filter(a => a.id !== id);
+  alert("Đã xoá (mô phỏng).");
+  document.dispatchEvent(new Event("DOMContentLoaded"));
+}
+</script>
 </body>
 </html>
