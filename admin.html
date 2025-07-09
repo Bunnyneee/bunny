@@ -107,7 +107,6 @@
   </table>
 
 <script>
-const IMG_FOLDER = "img";
 let selectedImages = [];
 let accounts = [];
 
@@ -122,10 +121,9 @@ window.addEventListener("DOMContentLoaded", () => {
       return;
     }
     selectedImages.push(...files);
-    console.log("Đã chọn ảnh:", selectedImages);
   });
 
-  addBtn.addEventListener("click", () => {
+  addBtn.addEventListener("click", async () => {
     const level = document.getElementById("level").value.trim();
     const rank = document.getElementById("rank").value.trim();
     const checkboxes = document.querySelectorAll("#linkCheckboxes input[type=checkbox]:checked");
@@ -137,22 +135,80 @@ window.addEventListener("DOMContentLoaded", () => {
 
     const links = Array.from(checkboxes).map(cb => cb.value);
     const newId = Date.now();
-    const images = selectedImages.map((f, i) => `${IMG_FOLDER}/${newId}/${i + 1}.jpg`);
+    const imgPaths = selectedImages.map((_, i) => `${IMG_FOLDER}/${newId}/${i + 1}.jpg`);
 
-    const acc = {
+    const newAcc = {
       id: newId,
       level,
       rank,
       links,
-      images,
+      images: imgPaths,
       sold: false
     };
 
-    accounts.push(acc);
+    for (let i = 0; i < selectedImages.length; i++) {
+      const imgPath = `${IMG_FOLDER}/${newId}/${i + 1}.jpg`;
+      await uploadImageToGitHub(selectedImages[i], imgPath);
+    }
+
+    accounts.push(newAcc);
+    await saveAccountsToGitHub();
+    alert("✅ Đã thêm acc!");
     selectedImages = [];
-    alert("✅ Đã thêm acc (mô phỏng, chưa lưu lên GitHub).")
     render();
   });
+
+  async function loadAccounts() {
+    const res = await fetch(`https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/${BRANCH}/${PATH_JSON}`);
+    accounts = await res.json();
+    render();
+  }
+
+  async function saveAccountsToGitHub() {
+    const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${PATH_JSON}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const sha = data.sha;
+
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(accounts, null, 2))));
+
+    await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${GITHUB_TOKEN}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: "update accs",
+        content,
+        sha,
+        branch: BRANCH
+      })
+    });
+  }
+
+  async function uploadImageToGitHub(file, path) {
+    const reader = new FileReader();
+    return new Promise((resolve) => {
+      reader.onload = async () => {
+        const content = reader.result.split(",")[1];
+        await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${path}`, {
+          method: "PUT",
+          headers: {
+            "Authorization": `Bearer ${GITHUB_TOKEN}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            message: `upload ${path}`,
+            content,
+            branch: BRANCH
+          })
+        });
+        resolve();
+      };
+      reader.readAsDataURL(file);
+    });
+  }
 
   function render() {
     const tbody = document.querySelector("#accTable tbody");
@@ -173,18 +229,18 @@ window.addEventListener("DOMContentLoaded", () => {
       tbody.appendChild(tr);
     }
   }
+
+  loadAccounts();
 });
 
 function toggle(id) {
   const acc = accounts.find(a => a.id === id);
   acc.sold = !acc.sold;
-  alert("Trạng thái đã đổi (mô phỏng).");
-  document.dispatchEvent(new Event("DOMContentLoaded"));
+  saveAccountsToGitHub().then(render);
 }
 function remove(id) {
   accounts = accounts.filter(a => a.id !== id);
-  alert("Đã xoá (mô phỏng).");
-  document.dispatchEvent(new Event("DOMContentLoaded"));
+  saveAccountsToGitHub().then(render);
 }
 </script>
 </body>
